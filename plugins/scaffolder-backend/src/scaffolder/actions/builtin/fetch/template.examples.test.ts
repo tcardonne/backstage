@@ -34,11 +34,10 @@ jest.mock('@backstage/plugin-scaffolder-node', () => ({
   fetchContents: jest.fn(),
 }));
 
-type FetchTemplateInput = ReturnType<
-  typeof createFetchTemplateAction
-> extends TemplateAction<infer U>
-  ? U
-  : never;
+type FetchTemplateInput =
+  ReturnType<typeof createFetchTemplateAction> extends TemplateAction<infer U>
+    ? U
+    : never;
 
 const aBinaryFile = fs.readFileSync(
   resolvePackagePath(
