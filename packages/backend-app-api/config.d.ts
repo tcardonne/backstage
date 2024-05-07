@@ -88,6 +88,47 @@ export interface Config {
                */
               subject: string;
             };
+            /**
+             * The scope of access permitted for this access method. If no scope
+             * is given, it'll have unlimited access. This access restriction
+             * applies for the framework level; individual plugins may have
+             * their own access control mechanisms on top of this.
+             */
+            scope?: {
+              /**
+               * If given, this method is limited to only having access to these
+               * plugins. Can be combined with `permissionAttributes`
+               * (especially in the form of `{ action: read }`), but it's
+               * superfluous to combine it with `permissions` that map to the
+               * same plugins.
+               */
+              plugins?: string[];
+              /**
+               * If given, this method is limited to only performing actions
+               * with these named permissions. It's superfluous to combine this
+               * with `plugins` that map to the same permissions, or with
+               * `permissionAttributes`.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permissions?: string[];
+              /**
+               * If given, this method is limited to only performing actions
+               * whose permissions have these attributes. Typically given in the
+               * specific form `{ action: read }`. It's superfluous to combine
+               * this with `permissionNames` that already have those same
+               * attributes.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permissionAttributes?: { [key: string]: string };
+            };
           }
         | {
             /**
@@ -129,6 +170,47 @@ export interface Config {
                * Useful for debugging and tracking purposes.
                */
               subject: string;
+            };
+            /**
+             * The scope of access permitted for this access method. If no scope
+             * is given, it'll have unlimited access. This access restriction
+             * applies for the framework level; individual plugins may have
+             * their own access control mechanisms on top of this.
+             */
+            scope?: {
+              /**
+               * If given, this method is limited to only having access to these
+               * plugins. Can be combined with `permissionAttributes`
+               * (especially in the form of `{ action: read }`), but it's
+               * superfluous to combine it with `permissions` that map to the
+               * same plugins.
+               */
+              plugins?: string[];
+              /**
+               * If given, this method is limited to only performing actions
+               * with these named permissions. It's superfluous to combine this
+               * with `plugins` that map to the same permissions, or with
+               * `permissionAttributes`.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permissions?: string[];
+              /**
+               * If given, this method is limited to only performing actions
+               * whose permissions have these attributes. Typically given in the
+               * specific form `{ action: read }`. It's superfluous to combine
+               * this with `permissionNames` that already have those same
+               * attributes.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permissionAttributes?: { [key: string]: string };
             };
           }
       >;

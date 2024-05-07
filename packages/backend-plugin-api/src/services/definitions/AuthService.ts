@@ -40,6 +40,59 @@ export type BackstageServicePrincipal = {
 
   // Exact format TBD, possibly 'plugin:<pluginId>' or 'external:<externalServiceId>'
   subject: string;
+
+  /**
+   * The scope limitations that apply to this principal.
+   *
+   * @remarks
+   *
+   * If no scope is provided the principal is assumed to have unlimited access,
+   * at a framework level. The permissions system and individual plugins may or
+   * may not still apply additional access controls on top of this.
+   */
+  scope?: BackstagePrincipalScope;
+};
+
+/**
+ * The scope limitations that apply to a given principal.
+ *
+ * @public
+ */
+export type BackstagePrincipalScope = {
+  /**
+   * If given, the principal is limited to only having access to these plugins.
+   * Can be combined with `permissionAttributes` (particularly in the form of
+   * `{action:read}`), but it's superfluous to combine it with `permissionNames`
+   * that map to the same plugins.
+   *
+   * This array always has at least one element, or is missing entirely.
+   */
+  pluginIds?: string[];
+  /**
+   * If given, the principal is limited to only performing actions with these
+   * named permissions. It's superfluous to combine this with `pluginIds` that
+   * map to the same permissions, or with `permissionAttributes`
+   *
+   * Note that this only applies where permissions checks are enabled in the
+   * first place. Endpoints that are not protected by the permissions system at
+   * all, are not affected by this setting.
+   *
+   * This array always has at least one element, or is missing entirely.
+   */
+  permissionNames?: string[];
+  /**
+   * If given, the principal is limited to only performing actions whose
+   * permissions have these attributes. Typically given in the specific form
+   * `{action:read}`. It's superfluous to combine this with `permissionNames`
+   * that already have those same attributes.
+   *
+   * Note that this only applies where permissions checks are enabled in the
+   * first place. Endpoints that are not protected by the permissions system at
+   * all, are not affected by this setting.
+   *
+   * This object always has at least one key, or is missing entirely.
+   */
+  permissionAttributes?: JsonObject;
 };
 
 /**

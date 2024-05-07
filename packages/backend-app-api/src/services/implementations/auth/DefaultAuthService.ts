@@ -23,7 +23,11 @@ import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError, ForwardedError } from '@backstage/errors';
+import {
+  AuthenticationError,
+  ForwardedError,
+  NotAllowedError,
+} from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { decodeJwt } from 'jose';
 import { ExternalTokenHandler } from './external/ExternalTokenHandler';
@@ -82,7 +86,18 @@ export class DefaultAuthService implements AuthService {
 
     const externalResult = await this.externalTokenHandler.verifyToken(token);
     if (externalResult) {
-      return createCredentialsWithServicePrincipal(externalResult.subject);
+      if (
+        externalResult.scope?.pluginIds &&
+        !externalResult.scope.pluginIds.includes(this.pluginId)
+      ) {
+        throw new NotAllowedError('Illegal scope');
+      }
+
+      return createCredentialsWithServicePrincipal(
+        externalResult.subject,
+        undefined,
+        externalResult.scope,
+      );
     }
 
     throw new AuthenticationError('Illegal token');

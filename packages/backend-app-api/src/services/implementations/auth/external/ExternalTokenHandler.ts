@@ -15,6 +15,7 @@
  */
 
 import {
+  BackstagePrincipalScope,
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
@@ -58,7 +59,7 @@ export class ExternalTokenHandler {
           `Unknown type '${type}' in ${NEW_CONFIG_KEY}, expected one of ${valid}`,
         );
       }
-      handler.add(handlerConfig.getConfig('options'));
+      handler.add(handlerConfig);
     }
 
     // Load the old keys too
@@ -77,7 +78,13 @@ export class ExternalTokenHandler {
 
   constructor(private readonly handlers: TokenHandler[]) {}
 
-  async verifyToken(token: string): Promise<{ subject: string } | undefined> {
+  async verifyToken(token: string): Promise<
+    | {
+        subject: string;
+        scope?: BackstagePrincipalScope;
+      }
+    | undefined
+  > {
     for (const handler of this.handlers) {
       const result = await handler.verifyToken(token);
       if (result) {

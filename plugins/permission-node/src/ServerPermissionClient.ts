@@ -33,12 +33,14 @@ import {
   AuthorizePermissionResponse,
   PolicyDecision,
   QueryPermissionRequest,
+  DefinitivePolicyDecision,
 } from '@backstage/plugin-permission-common';
 
 /**
  * A thin wrapper around
- * {@link @backstage/plugin-permission-common#PermissionClient} that allows all
- * service-to-service requests.
+ * {@link @backstage/plugin-permission-common#PermissionClient} that ensures the
+ * proper short-circuit handling of service principals.
+ *
  * @public
  */
 export class ServerPermissionClient implements PermissionsService {
@@ -91,6 +93,11 @@ export class ServerPermissionClient implements PermissionsService {
     queries: QueryPermissionRequest[],
     options?: PermissionsServiceRequestOptions,
   ): Promise<PolicyDecision[]> {
+    const maybeResponse = this.#decideBasedOnPrincipalScope(queries, options);
+    if (maybeResponse) {
+      return maybeResponse;
+    }
+
     if (await this.#shouldPermissionsBeApplied(options)) {
       return this.#permissionClient.authorizeConditional(
         queries,
@@ -105,6 +112,11 @@ export class ServerPermissionClient implements PermissionsService {
     requests: AuthorizePermissionRequest[],
     options?: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
+    const maybeResponse = this.#decideBasedOnPrincipalScope(requests, options);
+    if (maybeResponse) {
+      return maybeResponse;
+    }
+
     if (await this.#shouldPermissionsBeApplied(options)) {
       return this.#permissionClient.authorize(
         requests,
@@ -128,6 +140,44 @@ export class ServerPermissionClient implements PermissionsService {
     }
 
     return options;
+  }
+
+  #decideBasedOnPrincipalScope(
+    requests: Array<QueryPermissionRequest | AuthorizePermissionRequest>,
+    options?: PermissionsServiceRequestOptions,
+  ): DefinitivePolicyDecision[] | undefined {
+    if (!options || !('credentials' in options)) {
+      return undefined;
+    }
+
+    const credentials = options.credentials;
+    if (
+      !this.#auth.isPrincipal(credentials, 'service') ||
+      !credentials.principal.scope
+    ) {
+      return undefined;
+    }
+
+    const { permissionNames, permissionAttributes } =
+      credentials.principal.scope;
+
+    return requests.map(query => {
+      if (permissionNames && !permissionNames.includes(query.permission.name)) {
+        return { result: AuthorizeResult.DENY };
+      }
+      if (permissionAttributes) {
+        for (const [key, value] of Object.entries(permissionAttributes)) {
+          if (
+            (
+              query.permission.attributes as Record<string, unknown> | undefined
+            )?.[key] !== value
+          ) {
+            return { result: AuthorizeResult.DENY };
+          }
+        }
+      }
+      return { result: AuthorizeResult.ALLOW };
+    });
   }
 
   async #shouldPermissionsBeApplied(

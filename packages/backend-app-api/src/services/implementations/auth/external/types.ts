@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
+import { BackstagePrincipalScope } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 export interface TokenHandler {
   add(options: Config): void;
-  verifyToken(token: string): Promise<{ subject: string } | undefined>;
+  verifyToken(token: string): Promise<
+    | {
+        subject: string;
+        scope?: BackstagePrincipalScope;
+      }
+    | undefined
+  >;
 }

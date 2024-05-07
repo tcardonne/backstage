@@ -363,4 +363,46 @@ describe('ServerPermissionClient', () => {
       });
     });
   });
+
+  describe('with limited scopes', () => {
+    it('short circuits the response when relevant scopes are present', async () => {
+      const client = ServerPermissionClient.fromConfig(config, {
+        discovery,
+        tokenManager: mockServices.tokenManager(),
+        auth: mockServices.auth(),
+      });
+
+      await expect(
+        client.authorize([{ permission: testBasicPermission }], {
+          credentials: mockCredentials.service('foo', {
+            permissionNames: [testBasicPermission.name],
+          }),
+        }),
+      ).resolves.toEqual([{ result: AuthorizeResult.ALLOW }]);
+
+      await expect(
+        client.authorize([{ permission: testBasicPermission }], {
+          credentials: mockCredentials.service('foo', {
+            permissionNames: ['wrong-name'],
+          }),
+        }),
+      ).resolves.toEqual([{ result: AuthorizeResult.DENY }]);
+
+      await expect(
+        client.authorizeConditional([{ permission: testResourcePermission }], {
+          credentials: mockCredentials.service('foo', {
+            permissionNames: [testResourcePermission.name],
+          }),
+        }),
+      ).resolves.toEqual([{ result: AuthorizeResult.ALLOW }]);
+
+      await expect(
+        client.authorizeConditional([{ permission: testResourcePermission }], {
+          credentials: mockCredentials.service('foo', {
+            permissionNames: ['wrong-name'],
+          }),
+        }),
+      ).resolves.toEqual([{ result: AuthorizeResult.DENY }]);
+    });
+  });
 });

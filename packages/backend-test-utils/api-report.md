@@ -11,6 +11,7 @@ import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { BackstageNonePrincipal } from '@backstage/backend-plugin-api';
+import { BackstagePrincipalScope } from '@backstage/backend-plugin-api';
 import { BackstageServicePrincipal } from '@backstage/backend-plugin-api';
 import { BackstageUserInfo } from '@backstage/backend-plugin-api';
 import { BackstageUserPrincipal } from '@backstage/backend-plugin-api';
@@ -67,6 +68,7 @@ export namespace mockCredentials {
   }
   export function service(
     subject?: string,
+    scope?: BackstagePrincipalScope,
   ): BackstageCredentials<BackstageServicePrincipal>;
   export namespace service {
     export function header(options?: TokenOptions): string;

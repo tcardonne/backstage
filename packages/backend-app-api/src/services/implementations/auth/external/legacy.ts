@@ -17,6 +17,8 @@
 import { Config } from '@backstage/config';
 import { base64url, decodeJwt, decodeProtectedHeader, jwtVerify } from 'jose';
 import { TokenHandler } from './types';
+import { internalScopeFromConfig } from './helpers';
+import { BackstagePrincipalScope } from '@backstage/backend-plugin-api';
 
 /**
  * Handles `type: legacy` access.
@@ -24,19 +26,28 @@ import { TokenHandler } from './types';
  * @internal
  */
 export class LegacyTokenHandler implements TokenHandler {
-  #entries: Array<{ key: Uint8Array; subject: string }> = [];
+  #entries = new Array<{
+    key: Uint8Array;
+    subject: string;
+    scope?: BackstagePrincipalScope;
+  }>();
 
-  add(options: Config) {
-    this.#doAdd(options.getString('secret'), options.getString('subject'));
+  add(config: Config) {
+    const scope = internalScopeFromConfig(config);
+    this.#doAdd(
+      config.getString('options.secret'),
+      config.getString('options.subject'),
+      scope,
+    );
   }
 
   // used only for the old backend.auth.keys array
-  addOld(options: Config) {
+  addOld(config: Config) {
     // This choice of subject is for compatibility reasons
-    this.#doAdd(options.getString('secret'), 'external:backstage-plugin');
+    this.#doAdd(config.getString('secret'), 'external:backstage-plugin');
   }
 
-  #doAdd(secret: string, subject: string) {
+  #doAdd(secret: string, subject: string, scope?: BackstagePrincipalScope) {
     if (!secret.match(/^\S+$/)) {
       throw new Error('Illegal secret, must be a valid base64 string');
     }
@@ -52,7 +63,11 @@ export class LegacyTokenHandler implements TokenHandler {
       throw new Error('Illegal subject, must be a set of non-space characters');
     }
 
-    this.#entries.push({ key, subject });
+    this.#entries.push({
+      key,
+      subject,
+      scope,
+    });
   }
 
   async verifyToken(token: string) {
@@ -79,7 +94,10 @@ export class LegacyTokenHandler implements TokenHandler {
     for (const entry of this.#entries) {
       try {
         await jwtVerify(token, entry.key);
-        return { subject: entry.subject };
+        return {
+          subject: entry.subject,
+          scope: entry.scope,
+        };
       } catch (e) {
         if (e.code !== 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
           throw e;

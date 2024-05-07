@@ -134,6 +134,13 @@ export type BackstageNonePrincipal = {
   type: 'none';
 };
 
+// @public
+export type BackstagePrincipalScope = {
+  pluginIds?: string[];
+  permissionNames?: string[];
+  permissionAttributes?: JsonObject;
+};
+
 // @public (undocumented)
 export type BackstagePrincipalTypes = {
   user: BackstageUserPrincipal;
@@ -146,6 +153,7 @@ export type BackstagePrincipalTypes = {
 export type BackstageServicePrincipal = {
   type: 'service';
   subject: string;
+  scope?: BackstagePrincipalScope;
 };
 
 // @public (undocumented)

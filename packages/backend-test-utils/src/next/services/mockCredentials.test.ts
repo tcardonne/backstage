@@ -134,6 +134,18 @@ describe('mockCredentials', () => {
     expect(mockCredentials.service.invalidHeader()).toBe(
       'Bearer mock-invalid-service-token',
     );
+    expect(mockCredentials.service('test', { pluginIds: ['catalog'] })).toEqual(
+      {
+        $$type: '@backstage/BackstageCredentials',
+        principal: {
+          type: 'service',
+          subject: 'test',
+          scope: {
+            pluginIds: ['catalog'],
+          },
+        },
+      },
+    );
   });
 
   it('should throw on invalid user entity refs', () => {
