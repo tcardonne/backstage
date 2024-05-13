@@ -25,6 +25,7 @@ import cors from 'cors';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
+import { Format } from 'logform';
 import { GerritIntegration } from '@backstage/integration';
 import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -216,8 +217,8 @@ export function cacheToPluginCacheManager(
   cache: CacheClient,
 ): PluginCacheManager;
 
-// @public
-export const coloredFormat: winston.Logform.Format;
+// @public @deprecated (undocumented)
+export const coloredFormat: Format;
 
 // @public
 export interface ContainerRunner {

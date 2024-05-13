@@ -15,9 +15,5 @@
  */
 
 export { getRootLogger, getVoidLogger, setRootLogger } from './globalLoggers';
-export {
-  createRootLogger,
-  redactWinstonLogLine,
-  coloredFormat,
-} from './createRootLogger';
+export { createRootLogger, redactWinstonLogLine } from './createRootLogger';
 export { loggerToWinstonLogger } from './loggerToWinstonLogger';

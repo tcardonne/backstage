@@ -22,6 +22,7 @@
 
 export { legacyPlugin, makeLegacyPlugin } from './legacy';
 export type { LegacyCreateRouter } from './legacy';
+export { coloredFormat } from './deprecated';
 export * from './auth';
 export * from './cache';
 export { loadBackendConfig } from './config';

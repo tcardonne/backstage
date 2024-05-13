@@ -8,6 +8,7 @@
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
+import { Format } from 'logform';
 import { Handler } from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
@@ -183,6 +184,9 @@ export type CacheServiceOptions = {
 export type CacheServiceSetOptions = {
   ttl?: number;
 };
+
+// @public
+export const coloredFormat: Format;
 
 // @public
 export namespace coreServices {

@@ -17,9 +17,8 @@
 import { WinstonLogger } from '@backstage/backend-app-api';
 import { merge } from 'lodash';
 import * as winston from 'winston';
-import { format, LoggerOptions } from 'winston';
+import { LoggerOptions } from 'winston';
 import { setRootLogger } from './globalLoggers';
-import { TransformableInfo } from 'logform';
 
 const getRedacter = (() => {
   let redacter: ReturnType<typeof WinstonLogger.redacter> | undefined =
@@ -51,40 +50,6 @@ export function redactWinstonLogLine(
     info,
   ) as winston.Logform.TransformableInfo;
 }
-
-const colorizer = format.colorize();
-
-// NOTE: This is a copy of the WinstonLogger.colorFormat to avoid a circular dependency
-/**
- * Creates a pretty printed winston log formatter.
- *
- * @public
- */
-export const coloredFormat = format.combine(
-  format.timestamp(),
-  format.colorize({
-    colors: {
-      timestamp: 'dim',
-      prefix: 'blue',
-      field: 'cyan',
-      debug: 'grey',
-    },
-  }),
-  format.printf((info: TransformableInfo) => {
-    const { timestamp, level, message, plugin, service, ...fields } = info;
-    const prefix = plugin || service;
-    const timestampColor = colorizer.colorize('timestamp', timestamp);
-    const prefixColor = colorizer.colorize('prefix', prefix);
-
-    const extraFields = Object.entries(fields)
-      .map(
-        ([key, value]) => `${colorizer.colorize('field', `${key}`)}=${value}`,
-      )
-      .join(' ');
-
-    return `${timestampColor} ${prefixColor} ${level} ${message} ${extraFields}`;
-  }),
-);
 
 /**
  * Creates a default "root" logger. This also calls {@link setRootLogger} under
