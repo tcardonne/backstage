@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.2.8
+
+### Patch Changes
+
+- 5d99272: Update local development dependencies.
+- 52ab241: Adding support to change the default commit author for `publish:github:pull-request`
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/plugin-scaffolder-node@0.4.4
+  - @backstage/integration@1.11.0
+  - @backstage/backend-plugin-api@0.6.18
+
 ## 0.2.8-next.2
 
 ### Patch Changes

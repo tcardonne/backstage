@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.4.4
+
+### Patch Changes
+
+- e4b50ab: Scaffolder workspace serialization
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.2
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/integration@1.11.0
+  - @backstage/backend-plugin-api@0.6.18
+
 ## 0.4.4-next.2
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # @backstage/backend-common
 
+## 0.22.0
+
+### Minor Changes
+
+- ed83f85: Internal refactor of the database code.
+
+  **BREAKING**: The helper functions `createDatabaseClient` and `ensureDatabaseExists` have been removed from the public interface, since they have no usage within the repository and never were suitable for calling from the outside. Please consider using `coreServices.database` or `DatabaseManager` directly wherever possible instead.
+
+### Patch Changes
+
+- 2cc750d: Added `HarnessURLReader` with `readUrl` support.
+- 0ec0796: Plugins created through the `legacyPlugin` helper are now able to authenticate requests from plugins that are fully implemented using the new backend system. This fixes the `Key for the ES256 algorithm must be one of type KeyObject or CryptoKey. Received an instance of Uint8Array` error.
+- ccc8851: Added config prop `ensureSchemaExists` to support postgres instances where user can create schemas but not databases.
+- f66bbb4: Only create a single actual connection to memcache/redis, even in cases where many `CacheService` instances are made
+- ba0b8b4: Added option to `ServerTokenManager.fromConfig` that allows it to be instantiated in production without any configured keys.
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.3
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/integration@1.11.0
+  - @backstage/backend-plugin-api@0.6.18
+
 ## 0.22.0-next.2
 
 ### Patch Changes

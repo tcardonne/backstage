@@ -1,5 +1,14 @@
 # @backstage/backend-plugin-api
 
+## 0.6.18
+
+### Patch Changes
+
+- 1fedf0c: Removed explicit `toString()` method from `ServiceRef` type.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/backend-tasks@0.5.23
+
 ## 0.6.18-next.1
 
 ### Patch Changes
